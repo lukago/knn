@@ -27,9 +27,9 @@ public class App {
         l3.add(300.0);
 
         List<Double> l4 = new ArrayList<>();
-        l4.add(1000.0);
-        l4.add(2000.0);
-        l4.add(3000.0);
+        l4.add(1.0);
+        l4.add(2.0);
+        l4.add(4.0);
 
         List<Entry> trainSets = new ArrayList<>();
         trainSets.add(new Entry(l1, "small"));
@@ -38,7 +38,7 @@ public class App {
 
         Entry test = new Entry(l4, "");
         KNN knn = new KNN(trainSets, test);
-        String res = knn.classify(1);
+        String res = knn.classify(2);
         System.out.println(res);
     }
 }
@@ -80,37 +80,36 @@ class KNN {
         return Math.sqrt(distance);
     }
 
-    private List<Entry> getNeighbours(List<Entry> trainEntries, Entry testEntry, int k) {
+    private List<Pair> getNeighbours(List<Entry> trainEntries, Entry testEntry, int k) {
         List<Pair> distances = trainEntries.stream().map(entry -> {
             double dist = euclideanDistance(testEntry.values, entry.values);
             return new Pair(entry, dist);
         }).collect(Collectors.toList());
 
         distances.sort(Comparator.comparingDouble(a -> a.dist));
-        List<Entry> neighbours = distances.subList(0, k)
-                .stream().map(d -> d.entry)
-                .collect(Collectors.toList());
-
-        return neighbours;
+        return distances.subList(0, k);
     }
 
-    private String getResponse(List<Entry> neighbours) {
-        Map<String, Integer> classVotes = new HashMap<>();
-        for (Entry entry : neighbours) {
-            String response = entry.label;
-            if (classVotes.containsKey(response)) {
-                classVotes.put(response, classVotes.get(response) + 1);
-            } else {
-                classVotes.put(response, 1);
-            }
-        }
+    private String getResponse(List<Pair> neighbours) {
+        Map<Pair, Integer> classVotes = new HashMap<>();
+        neighbours.forEach(pair -> {
+            if (classVotes.containsKey(pair))
+                classVotes.put(pair, classVotes.get(pair) + 1);
+            else
+                classVotes.put(pair, 1);
+        });
         return classVotes.entrySet().stream()
-                .max(Comparator.comparingDouble(Map.Entry::getValue))
-                .get().getKey();
+                .max((p1, p2) -> {
+                    if (p1.getValue() > p2.getValue()) return 1;
+                    if (p1.getValue().equals(p2.getValue()))
+                        return Double.compare(p2.getKey().dist, p1.getKey().dist);
+                    return -1;
+                })
+                .get().getKey().entry.label;
     }
 
     public String classify(int k) {
-        List<Entry> neighbours = getNeighbours(this.trainSets, this.testInstance, k);
+        List<Pair> neighbours = getNeighbours(this.trainSets, this.testInstance, k);
         return getResponse(neighbours);
     }
 
