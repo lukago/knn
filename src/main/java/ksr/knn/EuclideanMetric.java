@@ -1,14 +1,16 @@
 package ksr.knn;
 
-import java.util.List;
-
 public class EuclideanMetric implements Metric {
 
     @Override
-    public double dist(List<Double> a, List<Double> b) {
+    public double dist(Entry a, Entry b) {
         double distance = 0;
-        for (int i = 0; i < a.size(); i++) {
-            distance += Math.pow(a.get(i) - b.get(i), 2);
+        for (int index : a.wordsMap.keySet()) {
+            Integer val1 = a.getWordsMap().get(index);
+            Integer val2 = b.getWordsMap().get(index);
+            if (val1 != null && val2 != null) {
+                distance += Math.pow(val1 - val2, 2);
+            }
         }
         return Math.sqrt(distance);
     }

@@ -1,13 +1,22 @@
 package ksr.knn;
 
-import java.util.List;
+import java.util.Map;
 
 public class Entry {
-    List<Double> values;
+
+    Map<Integer, Integer> wordsMap;
     String label;
 
-    public Entry(List<Double> values, String label) {
-        this.values = values;
+    public Entry(Map<Integer, Integer> values, String label) {
+        this.wordsMap = values;
         this.label = label;
+    }
+
+    public Map<Integer, Integer> getWordsMap() {
+        return wordsMap;
+    }
+
+    public String getLabel() {
+        return label;
     }
 }

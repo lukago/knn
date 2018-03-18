@@ -20,7 +20,7 @@ public class Knn {
 
     private List<Pair> getNeighbours(int k) {
         List<Pair> distances = trainEntries.stream().map(entry -> {
-            double dist = metric.dist(testEntry.values, entry.values);
+            double dist = metric.dist(testEntry, entry);
             return new Pair(entry, dist);
         }).collect(Collectors.toList());
 
