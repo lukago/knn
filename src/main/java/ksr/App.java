@@ -2,62 +2,27 @@ package ksr;
 
 import ksr.extraction.CountVectorizer;
 import ksr.knn.Entry;
-import ksr.knn.EuclideanMetric;
 import ksr.knn.Knn;
+import ksr.metric.EuclideanMetric;
 import ksr.parser.ParsedData;
 import ksr.parser.SgmParser;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class App {
 
     public static void main(String[] args) throws IOException {
         List<ParsedData> data = new SgmParser().parseAll("data/reuters21578", ".sgm");
         List<Entry> entries = new CountVectorizer().extract(data);
-
-        Map<Integer, Integer> l1 = new HashMap<>();
-        l1.put(1, 1);
-        l1.put(2, 2);
-        l1.put(3, 2);
-
-
-        Map<Integer, Integer> l2 = new HashMap<>();
-        l2.put(1, 10);
-        l2.put(2, 20);
-        l2.put(3, 30);
-
-        Map<Integer, Integer> l3 = new HashMap<>();
-        l3.put(1, 100);
-        l3.put(2, 200);
-        l3.put(3, 300);
-
-        Map<Integer, Integer> l4 = new HashMap<>();
-        l4.put(1, 10);
-        l4.put(2, 20);
-        l4.put(3, 40);
-
-        List<Entry> trainSets = new ArrayList<>();
-        trainSets.add(new Entry(l1, "small"));
-        trainSets.add(new Entry(l2, "medium"));
-        trainSets.add(new Entry(l3, "big"));
-
-        Entry test = new Entry(l4, "");
-        Knn knn = new Knn(trainSets, test, new EuclideanMetric());
-        String res = knn.classify(2);
-        System.out.println(res);
-
-        for (int i = 0; i < entries.size(); i++) {
-            List<Entry> entries1 = new ArrayList<>(entries);
-            test = entries1.remove(i);
-            knn = new Knn(entries1, test, new EuclideanMetric());
-            res = knn.classify(10);
-            if (!res.equals("usa"))
-                System.out.println(res + " " + test.getLabel() + " " + i);
-        }
+        int endIndex = (int) (entries.size()*0.7);
+        List<Entry> trainEntries = entries.subList(0, endIndex);
+        List<Entry> testEntries = entries.subList(endIndex, entries.size() - 1);
+        Knn knn = new Knn(trainEntries, testEntries, new EuclideanMetric());
+        Knn.Response res = knn.classify(5);
+        System.out.println(res.perc);
+        System.out.println(res.good);
+        System.out.println(res.wrong);
     }
 }
 

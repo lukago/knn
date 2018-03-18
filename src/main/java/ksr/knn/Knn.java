@@ -1,5 +1,7 @@
 package ksr.knn;
 
+import ksr.metric.Metric;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -9,16 +11,16 @@ import java.util.stream.Collectors;
 public class Knn {
 
     private List<Entry> trainEntries;
-    private Entry testEntry;
+    private List<Entry> testEntries;
     private Metric metric;
 
-    public Knn(List<Entry> trainEntries, Entry testEntry, Metric metric) {
+    public Knn(List<Entry> trainEntries, List<Entry> testEntries, Metric metric) {
         this.trainEntries = trainEntries;
-        this.testEntry = testEntry;
+        this.testEntries = testEntries;
         this.metric = metric;
     }
 
-    private List<Pair> getNeighbours(int k) {
+    private List<Pair> getNeighbours(int k, Entry testEntry) {
         List<Pair> distances = trainEntries.stream().map(entry -> {
             double dist = metric.dist(testEntry, entry);
             return new Pair(entry, dist);
@@ -46,8 +48,20 @@ public class Knn {
                 .get().getKey().entry.label;
     }
 
-    public String classify(int k) {
-        return getResponse(getNeighbours(k));
+    public Response classify(int k) {
+        Response response = new Response();
+        for (Entry testEntry : testEntries) {
+            String res = getResponse(getNeighbours(k, testEntry));
+            if (res.equals(testEntry.getLabel())) {
+                response.good++;
+                System.out.println("1");
+            } else {
+                response.wrong++;
+                System.out.println("0");
+            }
+        }
+        response.perc = response.good * 1.0 / (response.good + response.wrong);
+        return response;
     }
 
     public static class Pair {
@@ -58,5 +72,11 @@ public class Knn {
             this.entry = entry;
             this.dist = dist;
         }
+    }
+
+    public static class Response {
+        public int good;
+        public int wrong;
+        public double perc;
     }
 }

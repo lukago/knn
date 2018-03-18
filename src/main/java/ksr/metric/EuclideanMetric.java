@@ -1,4 +1,6 @@
-package ksr.knn;
+package ksr.metric;
+
+import ksr.knn.Entry;
 
 import java.util.HashSet;
 import java.util.Set;
