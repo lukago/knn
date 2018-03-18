@@ -1,5 +1,6 @@
 package ksr;
 
+import ksr.extraction.CountVectorizer;
 import ksr.knn.Entry;
 import ksr.knn.EuclideanMetric;
 import ksr.knn.Knn;
@@ -15,7 +16,8 @@ import java.util.Map;
 public class App {
 
     public static void main(String[] args) throws IOException {
-        List<ParsedData> d = new SgmParser().parseAll("data/reuters21578", ".sgm");
+        List<ParsedData> data = new SgmParser().parseAll("data/reuters21578", ".sgm");
+        List<Entry> entries = new CountVectorizer().extract(data);
 
         Map<Integer, Integer> l1 = new HashMap<>();
         l1.put(1, 1);
@@ -47,6 +49,15 @@ public class App {
         Knn knn = new Knn(trainSets, test, new EuclideanMetric());
         String res = knn.classify(2);
         System.out.println(res);
+
+        for (int i = 0; i < entries.size(); i++) {
+            List<Entry> entries1 = new ArrayList<>(entries);
+            test = entries1.remove(i);
+            knn = new Knn(entries1, test, new EuclideanMetric());
+            res = knn.classify(10);
+            if (!res.equals("usa"))
+                System.out.println(res + " " + test.getLabel() + " " + i);
+        }
     }
 }
 
