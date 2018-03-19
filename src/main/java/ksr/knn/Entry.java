@@ -2,17 +2,17 @@ package ksr.knn;
 
 import java.util.Map;
 
-public class Entry {
+public class Entry<K, V> {
 
-    Map<Integer, Integer> wordsMap;
-    String label;
+    private Map<K, V> wordsMap;
+    private String label;
 
-    public Entry(Map<Integer, Integer> values, String label) {
+    public Entry(Map<K, V> values, String label) {
         this.wordsMap = values;
         this.label = label;
     }
 
-    public Map<Integer, Integer> getWordsMap() {
+    public Map<K, V> getWordsMap() {
         return wordsMap;
     }
 

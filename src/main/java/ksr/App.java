@@ -14,11 +14,11 @@ public class App {
 
     public static void main(String[] args) throws IOException {
         List<ParsedData> data = new SgmParser().parseAll("data/reuters21578", ".sgm");
-        List<Entry> entries = new CountVectorizer().extract(data);
+        List<Entry<Integer, Integer>> entries = new CountVectorizer().extract(data);
         int endIndex = (int) (entries.size()*0.7);
-        List<Entry> trainEntries = entries.subList(0, endIndex);
-        List<Entry> testEntries = entries.subList(endIndex, entries.size() - 1);
-        Knn knn = new Knn(trainEntries, testEntries, new EuclideanMetric());
+        List<Entry<Integer, Integer>> trainEntries = entries.subList(0, endIndex);
+        List<Entry<Integer, Integer>> testEntries = entries.subList(endIndex, entries.size() - 1);
+        Knn<Integer, Integer> knn = new Knn<>(trainEntries, testEntries, new EuclideanMetric());
         Knn.Response res = knn.classify(5);
         System.out.println(res.perc);
         System.out.println(res.good);

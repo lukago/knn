@@ -8,19 +8,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Knn {
+public class Knn<K, V> {
 
-    private List<Entry> trainEntries;
-    private List<Entry> testEntries;
-    private Metric metric;
+    private List<Entry<K, V>> trainEntries;
+    private List<Entry<K, V>> testEntries;
+    private Metric<K, V> metric;
 
-    public Knn(List<Entry> trainEntries, List<Entry> testEntries, Metric metric) {
+    public Knn(List<Entry<K, V>> trainEntries, List<Entry<K, V>> testEntries, Metric<K, V> metric) {
         this.trainEntries = trainEntries;
         this.testEntries = testEntries;
         this.metric = metric;
     }
 
-    private List<Pair> getNeighbours(int k, Entry testEntry) {
+    private List<Pair> getNeighbours(int k, Entry<K, V> testEntry) {
         List<Pair> distances = trainEntries.stream().map(entry -> {
             double dist = metric.dist(testEntry, entry);
             return new Pair(entry, dist);
@@ -45,12 +45,12 @@ public class Knn {
                         return Double.compare(p2.getKey().dist, p1.getKey().dist);
                     return -1;
                 })
-                .get().getKey().entry.label;
+                .get().getKey().entry.getLabel();
     }
 
     public Response classify(int k) {
         Response response = new Response();
-        for (Entry testEntry : testEntries) {
+        for (Entry<K, V> testEntry : testEntries) {
             String res = getResponse(getNeighbours(k, testEntry));
             if (res.equals(testEntry.getLabel())) {
                 response.good++;
@@ -64,19 +64,19 @@ public class Knn {
         return response;
     }
 
-    public static class Pair {
-        Entry entry;
-        double dist;
-
-        Pair(Entry entry, double dist) {
-            this.entry = entry;
-            this.dist = dist;
-        }
-    }
-
     public static class Response {
         public int good;
         public int wrong;
         public double perc;
+    }
+
+    private class Pair {
+        Entry<K, V> entry;
+        double dist;
+
+        Pair(Entry<K, V> entry, double dist) {
+            this.entry = entry;
+            this.dist = dist;
+        }
     }
 }

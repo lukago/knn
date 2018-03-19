@@ -5,7 +5,7 @@ import ksr.parser.ParsedData;
 
 import java.util.List;
 
-public interface FeatureExtractor {
+public interface FeatureExtractor<K, V> {
 
-    List<Entry> extract(List<ParsedData> data);
+    List<Entry<K, V>> extract(List<ParsedData> data);
 }

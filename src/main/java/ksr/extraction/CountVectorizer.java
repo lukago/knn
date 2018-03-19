@@ -8,14 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CountVectorizer implements FeatureExtractor {
+public class CountVectorizer implements FeatureExtractor<Integer, Integer> {
 
     private HashMap<String, Integer> dict;
 
     @Override
-    public List<Entry> extract(List<ParsedData> data) {
+    public List<Entry<Integer, Integer>> extract(List<ParsedData> data) {
         initDict(data);
-        List<Entry> entries = new ArrayList<>();
+        List<Entry<Integer, Integer>> entries = new ArrayList<>();
         for (ParsedData parsedData : data) {
             Map<Integer, Integer> wordsMap = new HashMap<>();
             for (String word : parsedData.getWords()) {
@@ -23,7 +23,7 @@ public class CountVectorizer implements FeatureExtractor {
                     wordsMap.put(dict.get(word), countOccurences(word, parsedData.getWords()));
                 }
             }
-            entries.add(new Entry(wordsMap, parsedData.getLabel()));
+            entries.add(new Entry<>(wordsMap, parsedData.getLabel()));
         }
         return entries;
     }

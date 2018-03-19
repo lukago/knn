@@ -2,8 +2,8 @@ package ksr.parser;
 
 public class ParsedData {
 
-    String[] words;
-    String label;
+    private String[] words;
+    private String label;
 
     public ParsedData(String[] words, String label) {
         this.words = words;

@@ -5,10 +5,10 @@ import ksr.knn.Entry;
 import java.util.HashSet;
 import java.util.Set;
 
-public class EuclideanMetric implements Metric {
+public class EuclideanMetric implements Metric<Integer, Integer> {
 
     @Override
-    public double dist(Entry a, Entry b) {
+    public double dist(Entry<Integer, Integer> a, Entry<Integer, Integer> b) {
         Set<Integer> indexes = new HashSet<>(a.getWordsMap().keySet());
         indexes.addAll(b.getWordsMap().keySet());
         double distance = 0;
