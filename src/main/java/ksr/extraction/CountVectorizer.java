@@ -7,10 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CountVectorizer implements FeatureExtractor<Integer, Integer> {
 
     private HashMap<String, Integer> dict;
+    private static final String STOP_PATH = "data/stopwords.txt";
 
     @Override
     public List<Entry<Integer, Integer>> extract(List<ParsedData> data) {
@@ -19,8 +21,10 @@ public class CountVectorizer implements FeatureExtractor<Integer, Integer> {
         for (ParsedData parsedData : data) {
             Map<Integer, Integer> wordsMap = new HashMap<>();
             for (String word : parsedData.getWords()) {
-                if (!wordsMap.containsKey(dict.get(word))) {
-                    wordsMap.put(dict.get(word), countOccurences(word, parsedData.getWords()));
+                word = word.toLowerCase();
+                Integer dictIndex = dict.get(word);
+                if (dictIndex != null && !wordsMap.containsKey(dictIndex)) {
+                    wordsMap.put(dictIndex, countOccurences(word, parsedData.getWords()));
                 }
             }
             entries.add(new Entry<>(wordsMap, parsedData.getLabel()));
@@ -30,10 +34,12 @@ public class CountVectorizer implements FeatureExtractor<Integer, Integer> {
 
     private void initDict(List<ParsedData> data) {
         dict = new HashMap<>();
+        Set<String> stopWords = StopWords.readStopWords(STOP_PATH);
         int indexer = 0;
         for (ParsedData parsedData : data) {
             for (String word : parsedData.getWords()) {
-                if (!dict.containsKey(word)) {
+                word = word.toLowerCase();
+                if (!dict.containsKey(word) && !stopWords.contains(word)) {
                     dict.put(word, indexer++);
                 }
             }

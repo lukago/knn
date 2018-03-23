@@ -28,11 +28,6 @@ public class SgmParser implements Parser {
 
                 List<TextNode> texts = reuter.getElementsByTag("TEXT").first().textNodes();
                 String[] words = texts.get(texts.size() - 1).text().split(" ");
-                for(String word : words){
-                    if(!word.equals(word.toLowerCase())){
-                        word = word.toLowerCase();
-                    }
-                }
                 parsedData.add(new ParsedData(words, placeName));
             }
         }

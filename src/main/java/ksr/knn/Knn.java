@@ -49,25 +49,63 @@ public class Knn<K, V> {
     }
 
     public Response classify(int k) {
-        Response response = new Response();
-        for (Entry<K, V> testEntry : testEntries) {
-            String res = getResponse(getNeighbours(k, testEntry));
-            if (res.equals(testEntry.getLabel())) {
-                response.good++;
-                System.out.println("1");
+        double startTime = System.currentTimeMillis();
+        Response res = new Response();
+        for (int i = 0; i < testEntries.size(); i++) {
+            Entry<K, V> testEntry = testEntries.get(i);
+            String sres = getResponse(getNeighbours(k, testEntry));
+            if (sres.equals(testEntry.getLabel())) {
+                String key = testEntry.getLabel();
+                AnsPair val = res.ans.get(key);
+                if (val == null) val = new AnsPair();
+                val.good++;
+                res.ans.put(key, val);
+                System.out.printf("%d/%d \t%s +\n", i + 1, testEntries.size(), key);
             } else {
-                response.wrong++;
-                System.out.println("0");
+                String key = testEntry.getLabel();
+                AnsPair val = res.ans.get(key);
+                if (val == null) val = new AnsPair();
+                val.wrong++;
+                res.ans.put(key, val);
+                System.out.printf("%d/%d \t%s -\n", i + 1, testEntries.size(), key);
             }
         }
-        response.perc = response.good * 1.0 / (response.good + response.wrong);
-        return response;
+
+
+        res.good = res.ans.entrySet().stream().mapToInt(entry -> entry.getValue().good).sum();
+        res.wrong = res.ans.entrySet().stream().mapToInt(entry -> entry.getValue().wrong).sum();
+        res.perc = res.good * 1.0 / (res.wrong + res.good);
+        res.learnTime = (System.currentTimeMillis() - startTime) / 1000;
+        return res;
     }
 
     public static class Response {
+        public Map<String, AnsPair> ans = new HashMap<>();
         public int good;
         public int wrong;
         public double perc;
+        public double learnTime;
+
+        @Override
+        public String toString() {
+            return "Response{" +
+                    "\nans=" + ans +
+                    ",\ngood=" + good +
+                    ",\nwrong=" + wrong +
+                    ",\nperc=" + perc +
+                    ",\nlearnTime=" + learnTime +
+                    '}';
+        }
+    }
+
+    public static class AnsPair {
+        int good;
+        int wrong;
+
+        @Override
+        public String toString() {
+            return '{' + "good=" + good + ", wrong=" + wrong + '}';
+        }
     }
 
     private class Pair {
