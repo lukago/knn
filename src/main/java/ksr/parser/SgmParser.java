@@ -9,9 +9,15 @@ import org.jsoup.select.Elements;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SgmParser implements Parser {
+
+    private final String[] places = {"west-germany", "usa", "france", "uk", "canada", "japan"};
+    private final Set<String> placesSet = new HashSet<>(Arrays.asList(places));
 
     @Override
     public List<ParsedData> parse(String filepath) throws IOException {
@@ -25,10 +31,11 @@ public class SgmParser implements Parser {
             Elements placesNames = places.getElementsByTag("D");
             if (placesNames.size() == 1) {
                 String placeName = placesNames.first().text();
-
-                List<TextNode> texts = reuter.getElementsByTag("TEXT").first().textNodes();
-                String[] words = texts.get(texts.size() - 1).text().split(" ");
-                parsedData.add(new ParsedData(words, placeName));
+                if (placesSet.contains(placeName)) {
+                    List<TextNode> texts = reuter.getElementsByTag("TEXT").first().textNodes();
+                    String[] words = texts.get(texts.size() - 1).text().split(" ");
+                    parsedData.add(new ParsedData(words, placeName));
+                }
             }
         }
 
