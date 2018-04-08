@@ -16,8 +16,13 @@ import java.util.Set;
 
 public class SgmParser implements Parser {
 
-    private final String[] places = {"west-germany", "usa", "france", "uk", "canada", "japan"};
-    private final Set<String> placesSet = new HashSet<>(Arrays.asList(places));
+    private final String label;
+    private final Set<String> placesSet;
+
+    public SgmParser(String label, String[] places) {
+        this.label = label;
+        placesSet = new HashSet<>(Arrays.asList(places));
+    }
 
     @Override
     public List<ParsedData> parse(String filepath) throws IOException {
@@ -27,7 +32,7 @@ public class SgmParser implements Parser {
         Elements reutres = doc.getElementsByTag("REUTERS");
 
         for (Element reuter : reutres) {
-            Element places = reuter.getElementsByTag("PLACES").first();
+            Element places = reuter.getElementsByTag(label).first();
             Elements placesNames = places.getElementsByTag("D");
             if (placesNames.size() == 1) {
                 String placeName = placesNames.first().text();
