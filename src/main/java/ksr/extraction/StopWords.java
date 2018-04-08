@@ -9,10 +9,12 @@ import java.util.Set;
 
 public class StopWords {
 
-    public static Set<String> readStopWords(String filePath) {
+    private static final String STOP_PATH = "data/stopwords.txt";
+
+    public static Set<String> readStopWords() {
         Set<String> lines = new HashSet<>();
         try {
-            lines = new HashSet<>(Files.readAllLines(Paths.get(filePath), Charset.forName("UTF-8")));
+            lines = new HashSet<>(Files.readAllLines(Paths.get(STOP_PATH), Charset.forName("UTF-8")));
         } catch (IOException e) {
             e.printStackTrace();
         }

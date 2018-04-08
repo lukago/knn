@@ -18,7 +18,7 @@ public class ChebyshevMetric implements Metric<Integer, Integer> {
             Integer val2 = b.getWordsMap().get(index);
             if (val1 == null) val1 = 0;
             if (val2 == null) val2 = 0;
-            distance = Math.max(distance, Math.abs(val1-val2));
+            distance = Math.max(distance, Math.abs(val1 - val2));
         }
 
         return distance;

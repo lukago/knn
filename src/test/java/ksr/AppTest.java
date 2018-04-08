@@ -3,6 +3,13 @@ package ksr;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import ksr.extraction.CountMapper;
+import ksr.knn.Entry;
+import ksr.metric.Levenshtein;
+import ksr.parser.ParsedData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Unit test for simple App.
@@ -28,6 +35,16 @@ public class AppTest extends TestCase {
      * Rigorous Test :-)
      */
     public void testApp() {
-        assertTrue(true);
+        ParsedData p1 = new ParsedData(new String[]{"awesome", "strange", "text"}, "label");
+        ParsedData p2 = new ParsedData(new String[]{"awesomeone", "strange", "text"}, "label");
+
+        List<ParsedData> list = new ArrayList<>();
+        list.add(p1);
+        list.add(p2);
+
+        CountMapper countMapper = new CountMapper();
+        List<Entry<String, Integer>> entries = countMapper.extract(list);
+        Levenshtein levenshtein = new Levenshtein();
+        System.out.println(levenshtein.dist(entries.get(0), entries.get(1)));
     }
 }

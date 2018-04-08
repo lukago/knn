@@ -33,7 +33,19 @@ public class SgmParser implements Parser {
                 String placeName = placesNames.first().text();
                 if (placesSet.contains(placeName)) {
                     List<TextNode> texts = reuter.getElementsByTag("TEXT").first().textNodes();
-                    String[] words = texts.get(texts.size() - 1).text().split(" ");
+                    String[] words = texts.get(texts.size() - 1).text()
+                            .replace(",", "")
+                            .replace(".", "")
+                            .replace("\"", "")
+                            .replace("(", "")
+                            .replace(")", "")
+                            .replace("/", " ")
+                            .replace("<", "")
+                            .replace(">", "")
+                            .replace("\u0003", "")
+                            .replaceAll("\\d+", "")
+                            .toLowerCase()
+                            .split(" ");
                     parsedData.add(new ParsedData(words, placeName));
                 }
             }

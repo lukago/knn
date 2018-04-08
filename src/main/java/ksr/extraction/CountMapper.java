@@ -6,25 +6,25 @@ import opennlp.tools.stemmer.PorterStemmer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class CountVectorizer implements FeatureExtractor<Integer, Integer> {
+public class CountMapper implements FeatureExtractor<String, Integer> {
 
-    private HashMap<String, Integer> dict;
+    private Set<String> dict;
 
     @Override
-    public List<Entry<Integer, Integer>> extract(List<ParsedData> data) {
+    public List<Entry<String, Integer>> extract(List<ParsedData> data) {
         initDict(data);
-        List<Entry<Integer, Integer>> entries = new ArrayList<>();
+        List<Entry<String, Integer>> entries = new ArrayList<>();
         for (ParsedData parsedData : data) {
-            Map<Integer, Integer> wordsMap = new HashMap<>();
+            Map<String, Integer> wordsMap = new HashMap<>();
             for (String word : parsedData.getWords()) {
                 String newWord = new PorterStemmer().stem(word);
-                Integer dictIndex = dict.get(newWord);
-                if (dictIndex != null && !wordsMap.containsKey(dictIndex)) {
-                    wordsMap.put(dictIndex, countOccurences(word, parsedData.getWords()));
+                if (dict.contains(newWord) && !wordsMap.containsKey(newWord)) {
+                    wordsMap.put(newWord, countOccurences(word, parsedData.getWords()));
                 }
             }
             entries.add(new Entry<>(wordsMap, parsedData.getLabel()));
@@ -33,14 +33,13 @@ public class CountVectorizer implements FeatureExtractor<Integer, Integer> {
     }
 
     private void initDict(List<ParsedData> data) {
-        dict = new HashMap<>();
+        dict = new HashSet<>();
         Set<String> stopWords = StopWords.readStopWords();
-        int indexer = 0;
         for (ParsedData parsedData : data) {
             for (String word : parsedData.getWords()) {
                 String newWord = new PorterStemmer().stem(word);
-                if (!dict.containsKey(newWord) && !stopWords.contains(newWord) && newWord.length() > 2) {
-                    dict.put(newWord, indexer++);
+                if (!dict.contains(newWord) && !stopWords.contains(newWord) && newWord.length() > 2) {
+                    dict.add(newWord);
                 }
             }
         }
