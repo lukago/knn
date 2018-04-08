@@ -2,9 +2,11 @@ package ksr;
 
 import ksr.extraction.CountVectorizer;
 import ksr.extraction.CountMapper;
+import ksr.extraction.TfIdf;
 import ksr.knn.Entry;
 import ksr.knn.Knn;
 import ksr.metric.EuclideanMetric;
+import ksr.metric.EuclideanMetricDouble;
 import ksr.metric.TermFrequency;
 import ksr.parser.ParsedData;
 import ksr.parser.SgmParser;
@@ -18,7 +20,7 @@ public class App {
     private final static String[] topics = {"acq", "earn", "jobs", "income", "cocoa"};
 
     public static void main(String[] args) throws IOException {
-        cv();
+        tfidf();
     }
 
     private static void cv() throws IOException {
@@ -44,6 +46,20 @@ public class App {
         List<Entry<String, Integer>> testEntries = entries.subList(endIndex, entries.size());
 
         Knn<String, Integer> knn = new Knn<>(trainEntries, testEntries, new TermFrequency());
+        Knn.Response res = knn.classify(3);
+
+        System.out.println(res);
+    }
+
+    private static void tfidf() throws IOException {
+        List<ParsedData> data = new SgmParser("TOPICS", topics).parseAll("data/reuters21578", ".sgm");
+        List<Entry<String, Double>> entries = new TfIdf().extract(data);
+
+        int endIndex = (int) (entries.size() * 0.6);
+        List<Entry<String, Double>> trainEntries = entries.subList(0, endIndex);
+        List<Entry<String, Double>> testEntries = entries.subList(endIndex, entries.size());
+
+        Knn<String, Double> knn = new Knn<>(trainEntries, testEntries, new EuclideanMetricDouble());
         Knn.Response res = knn.classify(3);
 
         System.out.println(res);
