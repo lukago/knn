@@ -18,9 +18,10 @@ public class App {
 
     private final static String[] places = {"west-germany", "usa", "france", "uk", "canada", "japan"};
     private final static String[] topics = {"acq", "earn", "jobs", "income", "cocoa"};
+    private final static String[] voiv = {"lodzkie", "mazowieckie"};
 
     public static void main(String[] args) throws IOException {
-        tfidf();
+        voiw();
     }
 
     private static void cv() throws IOException {
@@ -52,7 +53,22 @@ public class App {
     }
 
     private static void tfidf() throws IOException {
-        List<ParsedData> data = new SgmParser("TOPICS", topics).parseAll("data/reuters21578", ".sgm");
+        List<ParsedData> data = new SgmParser("PLACES", places).parseAll("data/reuters21578", ".sgm");
+        List<Entry<String, Double>> entries = new TfIdf().extract(data);
+
+        int endIndex = (int) (entries.size() * 0.6);
+        List<Entry<String, Double>> trainEntries = entries.subList(0, endIndex);
+        List<Entry<String, Double>> testEntries = entries.subList(endIndex, entries.size());
+
+        Knn<String, Double> knn = new Knn<>(trainEntries, testEntries, new EuclideanMetricDouble());
+        Knn.Response res = knn.classify(3);
+
+        System.out.println(res);
+    }
+
+
+    private static void voiw() throws IOException {
+        List<ParsedData> data = new SgmParser("VOIVODESHIPS", voiv).parse("data/kek.txt");
         List<Entry<String, Double>> entries = new TfIdf().extract(data);
 
         int endIndex = (int) (entries.size() * 0.6);
