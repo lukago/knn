@@ -21,7 +21,7 @@ public class App {
     private final static String[] voiv = {"lodzkie", "mazowieckie"};
 
     public static void main(String[] args) throws IOException {
-        voiw();
+        cv();
     }
 
     private static void cv() throws IOException {
@@ -30,7 +30,7 @@ public class App {
 
         int endIndex = (int) (entries.size() * 0.6);
         List<Entry<Integer, Integer>> trainEntries = entries.subList(0, endIndex);
-        List<Entry<Integer, Integer>> testEntries = entries.subList(endIndex, endIndex + 100);
+        List<Entry<Integer, Integer>> testEntries = entries.subList(endIndex, entries.size());
 
         Knn<Integer, Integer> knn = new Knn<>(trainEntries, testEntries, new EuclideanMetric());
         Knn.Response res = knn.classify(3);

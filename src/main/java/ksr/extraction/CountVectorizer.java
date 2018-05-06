@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CountVectorizer implements FeatureExtractor<Integer, Integer> {
 
@@ -27,6 +29,8 @@ public class CountVectorizer implements FeatureExtractor<Integer, Integer> {
                     wordsMap.put(dictIndex, countOccurences(word, parsedData.getWords()));
                 }
             }
+
+            wordsMap = trim(wordsMap, 10);
             entries.add(new Entry<>(wordsMap, parsedData.getLabel()));
         }
         return entries;
@@ -52,5 +56,13 @@ public class CountVectorizer implements FeatureExtractor<Integer, Integer> {
             if (word.equals(w))
                 cnt++;
         return cnt;
+    }
+
+    private Map<Integer, Integer> trim(Map<Integer, Integer> map, int count) {
+        return map.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue((a, b) -> b - a))
+                .limit(count)
+                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 }
